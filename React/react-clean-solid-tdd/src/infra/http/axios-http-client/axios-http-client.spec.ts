@@ -1,3 +1,4 @@
+import { HttpPostParams } from "@/data/protocols/http";
 import { AxiosHttpClient } from "./axios-http-client";
 import axios from 'axios';
 
@@ -8,11 +9,16 @@ const makeSut = (): AxiosHttpClient => {
     return new AxiosHttpClient()
 }
 
+const mockPostRequest = (): HttpPostParams<any> => ({
+    url: 'any_url',
+    body: { name: 'João', lastName: 'Garcia' }
+})
+
 describe('AxiosHttpClient', () => {
     test('Should call axios with correct URL and verb', async () => {
-        const url = 'any_url' 
+        const request = mockPostRequest()
         const sut = makeSut()
-        await sut.post({ url })
-        expect(mockedAxios.post).toHaveBeenCalledWith(url)
+        await sut.post(request)
+        expect(mockedAxios.post).toHaveBeenCalledWith(request.url)
      })
 });
