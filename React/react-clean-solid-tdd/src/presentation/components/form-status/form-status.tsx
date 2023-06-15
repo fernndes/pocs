@@ -1,8 +1,8 @@
-import React, { memo } from 'react'
+import React from 'react'
 import Styles from './form-status-styles.scss'
 import Spinner from '../spinner/spinner'
 
-const Footer: React.FC = () => {
+const FormStatus: React.FC = () => {
     return (
         <div className={Styles.errorWrap}>
             <Spinner className={Styles.spinner} />
@@ -11,4 +11,4 @@ const Footer: React.FC = () => {
     )
 }
 
-export default memo(Footer)
+export default FormStatus
