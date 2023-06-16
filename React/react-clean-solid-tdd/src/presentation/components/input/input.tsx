@@ -8,8 +8,8 @@ const Input: React.FC<Props> = (props: Props) => {
     const { state, setState } = useContext(Context)
     const error = state[`${props.name}Error`]
 
-    const getStatus = (): string => '🔴'
-    const getTitle = (): string => error
+    const getStatus = (): string => error ? '🔴' : '🟢'
+    const getTitle = (): string => error || 'Ok'
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
         setState({
