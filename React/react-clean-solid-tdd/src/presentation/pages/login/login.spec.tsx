@@ -10,6 +10,7 @@ type SutTypes = {
 
 const makeSut = (): SutTypes => {
     const validationSpy = new ValidationSpy()
+    validationSpy.errorMessage = 'Erro!'
     const sut = render(<Login validation={validationSpy} />)
     return {
         sut,
@@ -30,9 +31,9 @@ describe('Login Component', () => {
         expect(submitButton.disabled).toBe(true)
     })
     test('Should start inputs with initial states', async () => {
-        const { sut } = makeSut()
+        const { sut, validationSpy } = makeSut()
         const emailStatus = sut.getByTestId('email-status')
-        expect(emailStatus.title).toBe('Campo obrigatório')
+        expect(emailStatus.title).toBe(validationSpy.errorMessage)
         expect(emailStatus.textContent).toBe('🔴')
         const passwordStatus = sut.getByTestId('password-status')
         expect(passwordStatus.textContent).toBe('🔴')
@@ -52,4 +53,13 @@ describe('Login Component', () => {
         expect(validationSpy.fieldName).toBe('password')
         expect(validationSpy.fieldValue).toBe('any_password')
      })
+
+    test('Should show email error if validation fails', () => { 
+        const { sut, validationSpy } = makeSut()
+        const emailInput = sut.getByTestId('email')
+        fireEvent.input(emailInput, { target: { value: 'any_email' } })
+        const emailStatus = sut.getByTestId('email-status')
+        expect(emailStatus.title).toBe(validationSpy.errorMessage)
+        expect(emailStatus.textContent).toBe('🔴')
+    })
 })
