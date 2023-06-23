@@ -3,6 +3,7 @@ import { RenderResult, render, fireEvent, cleanup, waitFor } from '@testing-libr
 import Login from './login'
 import { ValidationStub, AuthenticationSpy } from '@/presentation/test';
 import { InvalidCredentialsError } from '@/domain/errors';
+import 'jest-localstorage-mock'
 
 type SutTypes = {
     sut: RenderResult
@@ -52,6 +53,10 @@ const simulateStatusForField = (sut: RenderResult, fieldName: string, validation
 
 describe('Login Component', () => {
     afterEach(cleanup)
+    beforeEach(() => {
+        localStorage.clear()
+    })
+
     test('Should not render spinner and error on start', async () => {
         const { sut } = makeSut({ validationError: 'Erro!' })
 
@@ -137,7 +142,7 @@ describe('Login Component', () => {
         const { sut, authenticationSpy } = makeSut({ validationError: 'Erro!' })
 
         populateEmailField(sut)
-        fireEvent.submit(sut.getByTestId("form"))
+        fireEvent.submit(sut.getByTestId('form'))
 
         expect(authenticationSpy.callsCount).toBe(0)
     })
@@ -150,9 +155,17 @@ describe('Login Component', () => {
         const errorWrap = sut.getByTestId('error-wrap')
         await waitFor(() => errorWrap)
 
-        const mainError = sut.getByTestId("main-error")
+        const mainError = sut.getByTestId('main-error')
 
         expect(mainError.textContent).toBe(error.message)
         expect(errorWrap.childElementCount).toBe(1)
+    })
+    test('Should add accessToken to localStorage on success', async () => { 
+        const { sut, authenticationSpy } = makeSut()
+
+        simulateValidSubmit(sut)
+        await waitFor(() => sut.getByTestId('form'))
+
+        expect(localStorage.setItem).toBeCalledWith('accessToken', authenticationSpy.account.accessToken)
     })
 })
