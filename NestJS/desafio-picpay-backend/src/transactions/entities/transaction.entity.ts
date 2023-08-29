@@ -9,9 +9,9 @@ export class TransactionEntity {
     @Column()
     value: number;
 
-    @ManyToOne(() => AccountEntity, account => account.id) @JoinColumn()
+    @ManyToOne(() => AccountEntity) @JoinColumn()
     sender: AccountEntity;
 
-    @ManyToOne(() => AccountEntity, account => account.id) @JoinColumn()
+    @ManyToOne(() => AccountEntity) @JoinColumn()
     receiver: AccountEntity;
 }
