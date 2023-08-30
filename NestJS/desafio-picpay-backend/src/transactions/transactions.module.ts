@@ -7,6 +7,7 @@ import { AccountEntity } from 'src/accounts/entities/account.entity';
 import { AccountTypesEntity } from 'src/accounts/entities/account-types.entity';
 import { AccountsModule } from 'src/accounts/accounts.module';
 import { UserEntity } from 'src/users/entities/user.entity';
+import { AccountsService } from 'src/accounts/accounts.service';
 
 @Module({
   imports: [

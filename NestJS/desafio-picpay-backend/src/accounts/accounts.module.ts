@@ -11,5 +11,6 @@ import { AccountTypesEntity } from './entities/account-types.entity';
   ],
   controllers: [AccountsController],
   providers: [AccountsService],
+  exports: [AccountsService]
 })
 export class AccountsModule {}

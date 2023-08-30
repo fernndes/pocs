@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { TransactionEntity } from './entities/transaction.entity';
 import { AccountEntity } from 'src/accounts/entities/account.entity';
-import { UserEntity } from 'src/users/entities/user.entity';
+import { AccountsService } from 'src/accounts/accounts.service';
 
 @Injectable()
 export class TransactionsService {
@@ -12,7 +12,9 @@ export class TransactionsService {
         @InjectRepository(TransactionEntity)
         private transactionRepository: Repository<TransactionEntity>,
         @InjectRepository(AccountEntity)
-        private accountRepository: Repository<AccountEntity>
+        private accountRepository: Repository<AccountEntity>,
+        @Inject(AccountsService)
+        private readonly accountService: AccountsService
       ) {}
 
     private create(createTransactionDto: CreateTransactionDto) {
@@ -31,14 +33,16 @@ export class TransactionsService {
             .getOne()
     }
 
-    async transfer({ sender: senderId, receiver: receiverId, value: amount }: CreateTransactionDto) {
+    async transfer({ sender: senderId, receiver: receiverId, value: amount }: CreateTransactionDto, ) {
         const sender: any = await this.getAccountInfo(senderId)
         const receiver: any = await this.getAccountInfo(receiverId)
 
-        if(sender?.balance > 0) {
+        if(sender?.balance > 0 && sender?.balance - amount >= 0) {
             if(sender?.accountType?.permissions?.indexOf('send') !== -1) {
                 if(receiver?.accountType?.permissions?.indexOf('receive') !== -1) {
                     try {
+                        await this.accountService.update(sender.userId, { balance: sender?.balance -  amount })
+                        await this.accountService.update(receiver.userId, { balance: receiver?.balance +  amount })
                         return this.create({
                             receiver: receiver?.id,
                             sender: sender?.id,
